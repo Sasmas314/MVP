@@ -1,0 +1,7 @@
+streamlit
+pandas
+openpyxl
+pymupdf
+pillow
+requests
+python-dateutil

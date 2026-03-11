@@ -1,0 +1,86 @@
+html, body, [class*="css"] {
+    font-family: "Inter", sans-serif;
+}
+
+.stApp {
+    background:
+        radial-gradient(circle at top left, rgba(120, 180, 255, 0.22), transparent 28%),
+        radial-gradient(circle at top right, rgba(255, 255, 255, 0.18), transparent 24%),
+        linear-gradient(135deg, #0b1220 0%, #121a2b 45%, #0a1320 100%);
+    color: #eef4ff;
+}
+
+.block-container {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    max-width: 1400px;
+}
+
+.glass-card {
+    background: rgba(255, 255, 255, 0.10);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 24px;
+    padding: 20px;
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    margin-bottom: 1rem;
+}
+
+h1, h2, h3 {
+    color: #f7fbff;
+}
+
+p, label, div, span {
+    color: #eef4ff;
+}
+
+.stButton > button,
+.stDownloadButton > button {
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.12);
+    color: white;
+    backdrop-filter: blur(12px);
+    padding: 0.6rem 1.1rem;
+    transition: all 0.2s ease;
+}
+
+.stButton > button:hover,
+.stDownloadButton > button:hover {
+    background: rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+}
+
+div[data-testid="stFileUploader"] {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 18px;
+    padding: 12px;
+}
+
+div[data-testid="stDataEditor"] {
+    border-radius: 18px;
+    overflow: hidden;
+}
+
+[data-testid="stMetric"] {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    padding: 14px;
+    border-radius: 18px;
+}
+
+section[data-testid="stSidebar"] {
+    background: rgba(255, 255, 255, 0.06);
+    border-right: 1px solid rgba(255, 255, 255, 0.10);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+}
+
+hr {
+    border: none;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.12);
+    margin: 1rem 0;
+}
