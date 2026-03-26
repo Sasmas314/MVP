@@ -111,7 +111,7 @@ div[data-testid="stDataEditor"] {
 # =========================
 # CONFIG
 # =========================
-OPENROUTER_API_KEY = st.secrets.get("OPENROUTER_API_KEY", os.getenv("OPENROUTER_API_KEY", "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"))
+OPENROUTER_API_KEY = st.secrets.get("OPENROUTER_API_KEY", os.getenv("OPENROUTER_API_KEY", ""))
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 OPENROUTER_MODEL = "openrouter/free"
 
