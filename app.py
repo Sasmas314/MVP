@@ -5,6 +5,7 @@ import os
 import re
 from datetime import datetime
 from typing import Any, Dict, List, Optional
+import time
 
 import fitz  # PyMuPDF
 import pandas as pd
@@ -113,7 +114,7 @@ div[data-testid="stDataEditor"] {
 # =========================
 OPENROUTER_API_KEY = st.secrets.get("OPENROUTER_API_KEY", os.getenv("OPENROUTER_API_KEY", ""))
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
-OPENROUTER_MODEL = "openrouter/free"
+OPENROUTER_MODEL = "openai/gpt-4o-mini"
 
 DOCUMENT_TYPES = ["поезд", "самолет", "такси", "проживание"]
 
@@ -387,7 +388,10 @@ def call_openrouter(messages: List[Dict[str, Any]]) -> Dict[str, Any]:
         },
         "plugins": [
             {"id": "response-healing"}
-        ]
+        ],
+        "provider": {
+            "require_parameters": True
+        }
     }
 
     headers = {
@@ -397,16 +401,57 @@ def call_openrouter(messages: List[Dict[str, Any]]) -> Dict[str, Any]:
         "X-OpenRouter-Title": "Expense Parser MVP",
     }
 
-    response = requests.post(OPENROUTER_URL, headers=headers, json=payload, timeout=240)
-    response.raise_for_status()
-    data = response.json()
+    max_attempts = 3
+    retry_statuses = {429, 500, 502, 503, 504}
 
-    try:
-        content = data["choices"][0]["message"]["content"]
-    except Exception:
-        raise RuntimeError(f"Неожиданный ответ OpenRouter: {data}")
+    last_error = None
 
-    return clean_model_json(content)
+    for attempt in range(1, max_attempts + 1):
+        try:
+            response = requests.post(
+                OPENROUTER_URL,
+                headers=headers,
+                json=payload,
+                timeout=240
+            )
+
+            if response.status_code in retry_statuses:
+                raise requests.HTTPError(
+                    f"{response.status_code} temporary_error: {response.text}",
+                    response=response
+                )
+
+            response.raise_for_status()
+            data = response.json()
+
+            try:
+                content = data["choices"][0]["message"]["content"]
+            except Exception:
+                raise RuntimeError(f"Неожиданный ответ OpenRouter: {data}")
+
+            return clean_model_json(content)
+
+        except requests.HTTPError as e:
+            last_error = e
+            status_code = getattr(e.response, "status_code", None)
+
+            if status_code == 401:
+                raise RuntimeError("Ошибка авторизации OpenRouter: проверь API-ключ.")
+
+            if status_code in retry_statuses and attempt < max_attempts:
+                time.sleep(2 ** (attempt - 1))
+                continue
+
+            raise
+
+        except Exception as e:
+            last_error = e
+            if attempt < max_attempts:
+                time.sleep(2 ** (attempt - 1))
+                continue
+            raise RuntimeError(f"Ошибка запроса к OpenRouter: {str(last_error)}")
+
+    raise RuntimeError(f"Ошибка запроса к OpenRouter: {str(last_error)}")
 
 
 def call_openrouter_with_text(text: str, filename: str) -> Dict[str, Any]:
